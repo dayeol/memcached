@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <sys/mman.h>
 #include <pthread.h>
 
 static pthread_cond_t maintenance_cond = PTHREAD_COND_INITIALIZER;
@@ -39,7 +40,7 @@ unsigned int hashpower = HASHPOWER_DEFAULT;
 
 /* Main hash table. This is where we look except during expansion. */
 static item** primary_hashtable = 0;
-
+static item* attack_hashtable[65536*4] = {0,};
 /*
  * Previous hash table. During expansion, we look here for keys that haven't
  * been moved over to the primary yet.
@@ -60,7 +61,10 @@ void assoc_init(const int hashtable_init) {
     if (hashtable_init) {
         hashpower = hashtable_init;
     }
-    primary_hashtable = calloc(hashsize(hashpower), sizeof(void *));
+    //primary_hashtable = calloc(hashsize(hashpower), sizeof(void *));
+
+    primary_hashtable = attack_hashtable;
+    printf("primary_hashtable : %p\n", (void*) primary_hashtable);
     if (! primary_hashtable) {
         fprintf(stderr, "Failed to init hashtable.\n");
         exit(EXIT_FAILURE);
@@ -81,6 +85,7 @@ item *assoc_find(const char *key, const size_t nkey, const uint32_t hv) {
         it = old_hashtable[oldbucket];
     } else {
         it = primary_hashtable[hv & hashmask(hashpower)];
+        printf("%s, 0x%lx, %p\n", key, hv & hashmask(hashpower), (void*) &primary_hashtable[hv & hashmask(hashpower)]);
     }
 
     item *ret = NULL;

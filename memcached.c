@@ -6558,7 +6558,19 @@ static bool _parse_slab_sizes(char *s, uint32_t *slab_sizes) {
     return true;
 }
 
+#define START_TRACING asm volatile(".byte 0x0F\n\t" \
+            ".byte 0x01\n\t" \
+            ".byte 0x12\n\t" \
+            :::)
+
+#define STOP_TRACING asm volatile(".byte 0x0F\n\t" \
+             ".byte 0x01\n\t" \
+             ".byte 0x13\n\t" \
+             :::)
+
 int main (int argc, char **argv) {
+  printf("start tracing...\n");
+    START_TRACING;
     int c;
     bool lock_memory = false;
     bool do_daemonize = false;
@@ -7798,6 +7810,7 @@ int main (int argc, char **argv) {
     /* Give the sockets a moment to open. I know this is dumb, but the error
      * is only an advisory.
      */
+    printf(" delay!\n");
     usleep(1000);
     if (stats_state.curr_conns + stats_state.reserved_fds >= settings.maxconns - 1) {
         fprintf(stderr, "Maxconns setting is too low, use -c to increase.\n");
@@ -7817,10 +7830,13 @@ int main (int argc, char **argv) {
     uriencode_init();
 
     /* enter the event loop */
+    printf("starting event base loop\n");
     if (event_base_loop(main_base, 0) != 0) {
+        printf(" exiting... \n");
         retval = EXIT_FAILURE;
     }
 
+    printf("stop_assoc_maintenance_thread\n");
     stop_assoc_maintenance_thread();
 
     /* remove the PID file if we're a daemon */
@@ -7834,4 +7850,5 @@ int main (int argc, char **argv) {
     event_base_free(main_base);
 
     return retval;
+    STOP_TRACING;
 }
