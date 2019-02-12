@@ -6587,9 +6587,11 @@ int main (int argc, char **argv) {
     bool protocol_specified = false;
     bool tcp_specified = false;
     bool udp_specified = false;
+#if 0
     bool start_lru_maintainer = true;
     bool start_lru_crawler = true;
     bool start_assoc_maint = true;
+#endif
     enum hashfunc_type hash_type = MURMUR3_HASH;
     uint32_t tocrawl;
     uint32_t slab_sizes[MAX_NUMBER_OF_SLAB_CLASSES];
@@ -7041,7 +7043,7 @@ int main (int argc, char **argv) {
                 }
                 break;
             case NO_HASHEXPAND:
-                start_assoc_maint = false;
+                //start_assoc_maint = false;
                 break;
             case SLAB_REASSIGN:
                 settings.slab_reassign = true;
@@ -7105,7 +7107,7 @@ int main (int argc, char **argv) {
                 }
                 break;
             case LRU_CRAWLER:
-                start_lru_crawler = true;
+                //start_lru_crawler = true;
                 break;
             case LRU_CRAWLER_SLEEP:
                 if (subopts_value == NULL) {
@@ -7130,7 +7132,7 @@ int main (int argc, char **argv) {
                 settings.lru_crawler_tocrawl = tocrawl;
                 break;
             case LRU_MAINTAINER:
-                start_lru_maintainer = true;
+                //start_lru_maintainer = true;
                 settings.lru_segmented = true;
                 break;
             case HOT_LRU_PCT:
@@ -7248,10 +7250,10 @@ int main (int argc, char **argv) {
                 break;
             case NO_LRU_CRAWLER:
                 settings.lru_crawler = false;
-                start_lru_crawler = false;
+                //start_lru_crawler = false;
                 break;
             case NO_LRU_MAINTAINER:
-                start_lru_maintainer = false;
+                //start_lru_maintainer = false;
                 settings.lru_segmented = false;
                 break;
 #ifdef EXTSTORE
@@ -7411,8 +7413,8 @@ int main (int argc, char **argv) {
                 settings.inline_ascii_response = true;
                 settings.lru_segmented = false;
                 hash_type = JENKINS_HASH;
-                start_lru_crawler = false;
-                start_lru_maintainer = false;
+                //start_lru_crawler = false;
+                //start_lru_maintainer = false;
                 break;
             case NO_DROP_PRIVILEGES:
                 settings.drop_privileges = false;
@@ -7517,10 +7519,12 @@ int main (int argc, char **argv) {
         exit(EX_USAGE);
     }
 
+#if 0
     if (settings.temp_lru && !start_lru_maintainer) {
         fprintf(stderr, "temporary_ttl requires lru_maintainer to be enabled\n");
         exit(EX_USAGE);
     }
+#endif
 
     if (hash_init(hash_type) != 0) {
         fprintf(stderr, "Failed to initialize hash_algorithm!\n");
@@ -7659,7 +7663,7 @@ int main (int argc, char **argv) {
 #endif
 
     /* initialize other stuff */
-    logger_init();
+    //logger_init();
     stats_init();
     assoc_init(settings.hashpower_init);
     conn_init();
@@ -7710,6 +7714,7 @@ int main (int argc, char **argv) {
     init_lru_crawler(NULL);
 #endif
 
+#if 0
     if (start_assoc_maint && start_assoc_maintenance_thread() == -1) {
         exit(EXIT_FAILURE);
     }
@@ -7739,6 +7744,7 @@ int main (int argc, char **argv) {
         start_slab_maintenance_thread() == -1) {
         exit(EXIT_FAILURE);
     }
+#endif
 
     if (settings.idle_timeout && start_conn_timeout_thread() == -1) {
         exit(EXIT_FAILURE);
