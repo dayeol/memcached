@@ -85,7 +85,7 @@ item *assoc_find(const char *key, const size_t nkey, const uint32_t hv) {
         it = old_hashtable[oldbucket];
     } else {
         it = primary_hashtable[hv & hashmask(hashpower)];
-        printf("%s, 0x%lx, %p\n", key, hv & hashmask(hashpower), (void*) &primary_hashtable[hv & hashmask(hashpower)]);
+        //printf("%s, 0x%lx, %p\n", key, hv & hashmask(hashpower), (void*) &primary_hashtable[hv & hashmask(hashpower)]);
     }
 
     item *ret = NULL;

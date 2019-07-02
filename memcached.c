@@ -6569,8 +6569,8 @@ static bool _parse_slab_sizes(char *s, uint32_t *slab_sizes) {
              :::)
 
 int main (int argc, char **argv) {
-  printf("start tracing...\n");
-    START_TRACING;
+    //printf("start tracing...\n");
+    //START_TRACING;
     int c;
     bool lock_memory = false;
     bool do_daemonize = false;
@@ -7856,5 +7856,5 @@ int main (int argc, char **argv) {
     event_base_free(main_base);
 
     return retval;
-    STOP_TRACING;
+    //STOP_TRACING;
 }
